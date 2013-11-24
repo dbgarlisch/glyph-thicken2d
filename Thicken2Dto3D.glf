@@ -126,6 +126,28 @@ proc isInternalCon { con doms } {
 
 
 #----------------------------------------------------------------------------
+proc traceBlockFace { blk faceId } {
+  if { [catch {[$blk getFace $faceId] getDomains} doms] } {
+	traceMsg "  Bad faceid = $faceId"
+  } else {
+	foreach dom $doms {
+	  traceMsg "  $faceId = '[$dom getName]'"
+	}
+  }
+}
+
+
+#----------------------------------------------------------------------------
+proc traceBlockFaces { blk } {
+  traceMsg "BLOCK '[$blk getName]'"
+  set cnt [$blk getFaceCount]
+  for {set ii 1} {$ii <= $cnt} {incr ii} {
+	traceBlockFace $blk $ii
+  }
+}
+
+
+#----------------------------------------------------------------------------
 proc extrudeDomain { dom } {
   set createMode [pw::Application begin Create]
     if { [$dom isOfType pw::DomainStructured] } {
@@ -156,7 +178,13 @@ proc extrudeDomain { dom } {
   $solverMode end
   unset solverMode
   unset face0
+  traceMsg "----"
   traceMsg "Domain '[$dom getName]' extruded into block '[$blk getName]'"
+
+  # BUG WORKAROUND - extruded block JMaximum is returning wrong face
+  if { ![$dom isOfType pw::DomainStructured] } {
+	set topFaceId [$blk getFaceCount]
+  }
 
   if { "null" != $bcExtrusionBase } {
     $bcExtrusionBase apply [list [list $blk $dom]]
@@ -170,7 +198,7 @@ proc extrudeDomain { dom } {
       traceMsg "Applied base BC '[$bcExtrusionTop getName]' to '[$topDom getName]'"
     }
   }
-
+  traceBlockFaces $blk
   return $blk
 }
 
