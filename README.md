@@ -3,9 +3,7 @@ Some solvers will not accept a actual 2D grid blocks as input. Instead, these so
 
 This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary conditions in the 2D grid are automatically transfered to the corresponding extruded domains in the resulting 3D grid.
 
-![Thicken2d Banner Image][1]
-
-[1]: https://raw.github.com/dbgarlisch/glyph-thicken2d/master/images/banner.png  "thicken2d banner Image"
+![Thicken2d Banner Image](../master/images/banner.png  "thicken2d banner Image")
 
 
 ## Running The Script
