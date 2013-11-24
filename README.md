@@ -9,12 +9,12 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 ### Table of Contents
 * [Running The Script](#running-the-script)
 * [Configuring The Script](#configuring-the-script)
-    * [**extDirection**](#extdirection)
-    * [**extDistance**](#extdistance)
-    * [**extNumSteps**](#extnumsteps)
-    * [**sideWallBcInfo**](#sidewallbcinfo)
-    * [**verbose**](#verbose)
-* [Limitations](#limitations)
+    * [extDirection](#extdirection)
+    * [extDistance](#extdistance)
+    * [extNumSteps](#extnumsteps)
+    * [sideWallBcInfo](#sidewallbcinfo)
+    * [verbose](#verbose)
+* [Script Limitations](#script-limitations)
 * [Disclaimer](#disclaimer)
 
 
@@ -90,7 +90,7 @@ If set to 0, only minimal trace information is dumped.
     set verbose 0
 
 
-## Limitations
+## Script Limitations
 
 Pointwise does not support 2D mode for some of the CAE solvers that require thickened 2D grids. This script cannot be used for these solvers. Instead, the 2D grids will need to be thickened manually using Pointwise's block extrusion tools.
 
