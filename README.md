@@ -12,14 +12,6 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 * [Script Limitations](#script-limitations)
 * [Sourcing This Script](#sourcing-this-script)
     * [pw::Thicken2D Library Docs](#pwthicken2d-library-docs)
-        * [proc pw::Thicken2D::setVerbose](#proc-pwthicken2dsetverbose--val-)
-        * [proc pw::Thicken2D::setExtDirection](#proc-pwthicken2dsetextdirection--val-)
-        * [proc pw::Thicken2D::setExtDistance](#proc-pwthicken2dsetextdistance--val-)
-        * [proc pw::Thicken2D::setExtSteps](#proc-pwthicken2dsetextsteps--val-)
-        * [proc pw::Thicken2D::setMinSidewallBc](#proc-pwthicken2dsetminsidewallbc--solvername-bcname-bctype-bcid-null-)
-        * [proc pw::Thicken2D::setMaxSidewallBc](#proc-pwthicken2dsetmaxsidewallbc--solvername-bcname-bctype-bcid-null-)
-        * [proc pw::Thicken2D::setSidewallBc](#proc-pwthicken2dsetsidewallbc--solvername-bcname-bctype-bcid-null-minmax-both-)
-        * [proc pw::Thicken2D::thicken](#proc-pwthicken2dthicken--domstothicken-)
     * [pw::Thicken2D Library Usage Examples](#pwthicken2d-library-usage-examples)
         * [Thickening a 2D Grid for the COBALT Solver](#thickening-a-2d-grid-for-the-cobalt-solver)
 * [Disclaimer](#disclaimer)
@@ -35,7 +27,7 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 ## Configuring The Script
 
 You can change the script's default behavior by editing the configuration options
-set in `proc pw::Thicken2D::run{}`. See the the [pw::Thicken2D Library Docs](#pwthicken2d-library-docs) section for details.
+set in **pw::Thicken2D::run**. See the the [pw::Thicken2D Library Docs](#pwthicken2d-library-docs) section for details.
 
 
 ## Script Limitations
@@ -57,72 +49,120 @@ See the script `test/test01.glf` for an example.
 
 ### pw::Thicken2D Library Docs
 
-#### proc pw::Thicken2D::setVerbose { val }
-This integer value controls the level of runtime trace information dumped by the script.
+```Tcl
+proc pw::Thicken2D::setVerbose { val }
+```
+Sets the level of runtime trace information dumped by the script.
+<dl>
+  <dt><code>val</code></dt>
+  <dd>If set to 1, full trace information is dumped. If set to 0, only minimal trace information is dumped. (default: 0)</dd>
+</dl>
+<br/>
 
-    val - If set to 1, full trace information is dumped. If set to 0, only
-          minimal trace information is dumped.
+```Tcl
+proc pw::Thicken2D::setExtDirection { val }
+```
+Sets the extrusion direction.
+<dl>
+  <dt><code>val</code></dt>
+  <dd>The extrusion direction vector as a Tcl list of three floating point values {dx dy dz}. (default: {0 0 1})</dd>
+</dl>
+<br/>
 
-    default: pw::Thicken2D::setVerbose 0
+```Tcl
+proc pw::Thicken2D::setExtDistance { val }
+```
+Sets the extrusion distance.
+<dl>
+  <dt><code>val</code></dt>
+  <dd>The total extrusion distance traversed by all steps combined. (default: 1.0)</dd>
+</dl>
+<br/>
 
-#### proc pw::Thicken2D::setExtDirection { val }
-This setting specifies the extrusion direction.
+```Tcl
+proc pw::Thicken2D::setExtSteps { val }
+```
+Sets the number of extrusion steps.
+<dl>
+  <dt><code>val</code></dt>
+  <dd>The number of extrusion steps. (default: 1)</dd>
+</dl>
+<br/>
 
-    val - The direction vector as a Tcl list of three floating point values
-          {dx dy dz}.
+```Tcl
+proc pw::Thicken2D::setMinSidewallBc { solverName bcName bcType {bcId "null"} }
+```
+For a given solver, sets the boundary condition that will be applied to the min side wall domains in the thickened grid.
 
-    default: pw::Thicken2D::setExtDirection {0 0 1}
+See **pw::Thicken2D::setSidewallBc** for more details.
+<br/>
 
-#### proc pw::Thicken2D::setExtDistance { val }
-This floating point value controls the block extrusion distance.
+```Tcl
+proc pw::Thicken2D::setMaxSidewallBc { solverName bcName bcType {bcId "null"} }
+```
+For a given solver, sets the boundary condition that will be applied to the max side wall domains in the thickened grid.
 
-    val - The total extrusion distance traversed by all steps combined.
-    default: pw::Thicken2D::setExtDistance 1
+See **pw::Thicken2D::setSidewallBc** for more details.
+<br/>
 
-#### proc pw::Thicken2D::setExtSteps { val }
-This integer value controls the number of block extrusion steps.
+```Tcl
+proc pw::Thicken2D::setSidewallBc { solverName bcName bcType {bcId "null"} {minMax "both"} }
+```
+For a given solver, sets the boundary condition that will be applied to the min, max, or to both side wall domains in the thickened grid.
+<dl>
+  <dt><code>solverName</code></dt>
+  <dd>Name of the solver for which this entry is being made. Must be one of the solver names returned by
+    <b>[pw::Application getCAESolverNames]</b></dd>
+  <dt><code>bcName</code></dt>
+  <dd>The side wall BC name. This can be any name allowed by the targeted solver.  If the boundary condition already
+      exisits, it will be used as-is (the `bcType` and `bcId` values are ignored). If the boundary condition does not
+      exit, it is created using the `bcType` and `bcId` values.</dd>
+  <dt><code>bcType</code></dt>
+  <dd>The solver specific boundary condition type.</dd>
+  <dt><code>bcId</code></dt>
+  <dd>An integer, user-defined boundary condition id. If the id is set to *null*, a unique value is automatically
+      assigned.</dd>
+  <dt><code>minMax</code></dt>
+  <dd>Indicates the side wall for which this BC is intended. One of `min`, `max`, or `both`.</dd>
+</dl>
 
-    val - The number of extrusion steps.
-
-    default: pw::Thicken2D::setExtNumSteps 1
-
-#### proc pw::Thicken2D::setMinSidewallBc { solverName bcName bcType {bcId "null"} }
-For a given solver, sets the boundary condition that will be applied to the min side wall domains in the thickened grid. See [pw::Thicken2D::setSidewallBc](#proc-pwthicken2dsetsidewallbc--solvername-bcname-bctype-bcid-null-minmax-both-) for details.
-
-#### proc pw::Thicken2D::setMaxSidewallBc { solverName bcName bcType {bcId "null"} }
-For a given solver, sets the boundary condition that will be applied to the max side wall domains in the thickened grid. See [pw::Thicken2D::setSidewallBc](#proc-pwthicken2dsetsidewallbc--solvername-bcname-bctype-bcid-null-minmax-both-) for details.
-
-#### proc pw::Thicken2D::setSidewallBc { solverName bcName bcType {bcId "null"} {minMax "both"} }
-For a given solver, sets the boundary condition that will be applied to the min, max, or both side wall domains in the thickened grid.
-
-The min domains are the domains from the original 2D grid.
-
-The max domains are opposite the min domains on the other end of the extruded 3D grid.
-
-The side wall boundary conditions are optional. Side wall boundary conditions will only be assigned by the script if appropriate solver entries are added.
-
-    solverName - The targeted solver name.
-    bcName     - The side wall BC name. This can be any name allowed by the
-                 targeted solver.  If the boundary condition already exisits,
-                 it will be used as-is (the `bcType` and `bcId` values are
-                 ignored). If the boundary condition does not exit, it is created
-                 using the `bcType` and `bcId` values.
-    bcType     - The solver specific boundary condition type.
-    bcId       - An integer, user-defined boundary condition id. If the id is set
-                 to *null*, a unique value is automatically assigned.
-    minMax     - Indicates the side wall for which this BC is intended. It must
-                 be one of `min`, `max`, or `both`.
-
-    default:
+By default, the following side wall boundary condition entries are created;
+```Tcl
     pw::Thicken2D::setSidewallBc "GASP" "Side Wall" "1st Order Extrapolation"
 
-    pw::Thicken2D::setMinSidewallBc "CGNS" "Side Wall Min" "Wall" "null"
-    pw::Thicken2D::setMaxSidewallBc "CGNS" "Side Wall Max" "Wall" "null"
+    pw::Thicken2D::setMinSidewallBc "CGNS" "Side Wall Min" "Wall"
+    pw::Thicken2D::setMaxSidewallBc "CGNS" "Side Wall Max" "Wall"
+```
 
-#### proc pw::Thicken2D::thicken { domsToThicken }
-Thickens a 2D grid into a one cell deep, 3D grid. All boundary conditions in the 2D grid are automatically transfered to the corresponding extruded domains in the resulting 3D grid.
+The Min and Max versions of this proc are wrappers around **pw::Thicken2D::setSidewallBc** as detailed below.
+```Tcl
+   pw::Thicken2D::setMinSidewallBc "CGNS" "Side Wall Min" "Wall"
+   # is equivalent to
+   pw::Thicken2D::setSidewallBc "CGNS" "Side Wall Min" "Wall" "null" "min"
 
-    domsToThicken - The list of 2D domains to thicken (list).
+   pw::Thicken2D::setMaxSidewallBc "CGNS" "Side Wall Max" "Wall"
+   # is equivalent to
+   pw::Thicken2D::setSidewallBc "CGNS" "Side Wall Max" "Wall" "null" "max"
+```
+
+The min domains are the domains from the original 2D grid. The max domains are opposite the min domains on the other end of the extruded 3D grid. For an example, see the boundary condition assignments in the banner image above.
+
+The side wall boundary conditions are optional. Side wall boundary conditions will only be assigned by the script if appropriate solver entries are added.
+<br/>
+
+```Tcl
+proc pw::Thicken2D::thicken { domsToThicken }
+```
+Thickens a 2D grid into an extruded 3D grid.
+<dl>
+  <dt><code>domsToThicken</code></dt>
+  <dd>A list of 2D blocks (domains) to thicken.</dd>
+</dl>
+
+All boundary conditions in the 2D grid are automatically transfered to the corresponding extruded domains in the resulting 3D grid.
+
+See also, **pw::Thicken2D::setExtDirection**, **proc pw::Thicken2D::setExtDistance**, **proc pw::Thicken2D::setExtSteps**, **pw::Thicken2D::setMinSidewallBc**, **pw::Thicken2D::setMaxSidewallBc**, **pw::Thicken2D::setSidewallBc**.
+<br/>
 
 ### pw::Thicken2D Library Usage Examples
 
@@ -148,8 +188,6 @@ Thickens a 2D grid into a one cell deep, 3D grid. All boundary conditions in the
 
     pw::Thicken2D::thicken [pw::Grid getAll -type pw::Domain]
 ```
-
-
 
 ## Disclaimer
 Scripts are freely provided. They are not supported products of
