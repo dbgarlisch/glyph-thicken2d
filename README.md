@@ -41,8 +41,10 @@ It is possible to source this script in your own Glyph scripts and use it as a l
 
 To source this script add the following lines to your script:
 
+```Tcl
     set disableAutoRun_Thicken2D 1 ;# disable the autorun
-    source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"]
+    source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"
+```
 
 See the script `test/test01.glf` for an example.
 
@@ -50,7 +52,7 @@ See the script `test/test01.glf` for an example.
 ### pw::Thicken2D Library Docs
 
 ```Tcl
-proc pw::Thicken2D::setVerbose { val }
+pw::Thicken2D::setVerbose { val }
 ```
 Sets the level of runtime trace information dumped by the script.
 <dl>
@@ -60,7 +62,7 @@ Sets the level of runtime trace information dumped by the script.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setExtDirection { val }
+pw::Thicken2D::setExtDirection { val }
 ```
 Sets the extrusion direction.
 <dl>
@@ -70,7 +72,7 @@ Sets the extrusion direction.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setExtDistance { val }
+pw::Thicken2D::setExtDistance { val }
 ```
 Sets the extrusion distance.
 <dl>
@@ -80,7 +82,7 @@ Sets the extrusion distance.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setExtSteps { val }
+pw::Thicken2D::setExtSteps { val }
 ```
 Sets the number of extrusion steps.
 <dl>
@@ -90,7 +92,7 @@ Sets the number of extrusion steps.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setMinSidewallBc { solverName bcName bcType {bcId "null"} }
+pw::Thicken2D::setMinSidewallBc { solverName bcName bcType {bcId "null"} }
 ```
 For a given solver, sets the boundary condition that will be applied to the min side wall domains in the thickened grid.
 
@@ -98,7 +100,7 @@ See **pw::Thicken2D::setSidewallBc** for more details.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setMaxSidewallBc { solverName bcName bcType {bcId "null"} }
+pw::Thicken2D::setMaxSidewallBc { solverName bcName bcType {bcId "null"} }
 ```
 For a given solver, sets the boundary condition that will be applied to the max side wall domains in the thickened grid.
 
@@ -106,7 +108,7 @@ See **pw::Thicken2D::setSidewallBc** for more details.
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::setSidewallBc { solverName bcName bcType {bcId "null"} {minMax "both"} }
+pw::Thicken2D::setSidewallBc { solverName bcName bcType {bcId "null"} {minMax "both"} }
 ```
 For a given solver, sets the boundary condition that will be applied to the min, max, or to both side wall domains in the thickened grid.
 <dl>
@@ -151,7 +153,7 @@ The side wall boundary conditions are optional. Side wall boundary conditions wi
 <br/>
 
 ```Tcl
-proc pw::Thicken2D::thicken { domsToThicken }
+pw::Thicken2D::thicken { domsToThicken }
 ```
 Thickens a 2D grid into an extruded 3D grid.
 <dl>
