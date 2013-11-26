@@ -122,10 +122,10 @@ For a given solver, sets the boundary condition that will be applied to the min,
   <dt><code>bcType</code></dt>
   <dd>The solver specific boundary condition type.</dd>
   <dt><code>bcId</code></dt>
-  <dd>An integer, user-defined boundary condition id. If the id is set to *null*, a unique value is automatically
+  <dd>An integer, user-defined boundary condition id. If the id is set to <b>null</b>, a unique value is automatically
       assigned.</dd>
   <dt><code>minMax</code></dt>
-  <dd>Indicates the side wall for which this BC is intended. One of `min`, `max`, or `both`.</dd>
+  <dd>Indicates the side wall for which this BC is intended. One of <b>min</b>, <b>max</b>, or <b>both</b>.</dd>
 </dl>
 
 By default, the following side wall boundary condition entries are created;
@@ -147,9 +147,10 @@ The Min and Max versions of this proc are wrappers around **pw::Thicken2D::setSi
    pw::Thicken2D::setSidewallBc "CGNS" "Side Wall Max" "Wall" "null" "max"
 ```
 
-The min domains are the domains from the original 2D grid. The max domains are opposite the min domains on the other end of the extruded 3D grid. For an example, see the boundary condition assignments in the banner image above.
+The min side wall domains are the domains from the original 2D grid. The max side wall domains are opposite the min side wall domains on the other end of the extruded 3D grid. For an example, see the boundary condition assignments in the banner image above.
 
 The side wall boundary conditions are optional. Side wall boundary conditions will only be assigned by the script if appropriate solver entries are added.
+<br/>
 <br/>
 
 ```Tcl
