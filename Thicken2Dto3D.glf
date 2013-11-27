@@ -421,6 +421,7 @@ namespace eval pw::_Thicken2D {
 	traceMsg "Domain '[$dom getName]' extruded into block '[$blk getName]'"
 
 	# BUG WORKAROUND - extruded block JMaximum is returning wrong face
+	# FIXED in 17.1R5
 	if { ![$dom isOfType pw::DomainStructured] } {
 	  set topFaceId [$blk getFaceCount]
 	}
