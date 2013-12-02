@@ -11,6 +11,7 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
     * [Dialog Box Options](#dialog-box-options)
 * [Script Limitations](#script-limitations)
 * [Sourcing This Script](#sourcing-this-script)
+    * [Namespace pw::Thicken2D](#namespace-pwthicken2d)
     * [pw::Thicken2D Library Docs](#pwthicken2d-library-docs)
     * [pw::Thicken2D Library Usage Examples](#pwthicken2d-library-usage-examples)
         * [Thickening a 2D Grid for the COBALT Solver](#thickening-a-2d-grid-for-the-cobalt-solver)
@@ -27,7 +28,7 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 
 ### Dialog Box Options
 
-![Thicken2d Dialog Box Image](../master/images/dialog.png  "thicken2d dialog box image")
+<img src="../master/images/dialog.png" width="400px" alt="Thicken2d Dialog Box Image"/>
 
 * **Extrude Steps** - Sets the number of extrusion steps.
 * **Extrude Distance** - Sets the total extrusion distance traversed by all steps combined.
@@ -61,6 +62,17 @@ To source this script add the following lines to your script:
 ```
 
 See the script `test/test01.glf` for an example.
+
+### Namespace pw::Thicken2D
+
+All of the procs in this collection reside in the **pw::Thicken2D** namespace.
+
+To call a proc in this collection, you must prefix the proc name with a **pw::Thicken2D::** namespace specifier.
+
+For example:
+```Tcl
+pw::Thicken2D::thicken $doms
+```
 
 
 ### pw::Thicken2D Library Docs
@@ -122,7 +134,8 @@ See **pw::Thicken2D::setSidewallBc** for more details.
 <br/>
 
 ```Tcl
-pw::Thicken2D::setSidewallBc { solverName {bcName "Unspecified"} {bcType "Unspecified"} {bcId "null"} {minMax "both"} }
+pw::Thicken2D::setSidewallBc { solverName {bcName "Unspecified"} {bcType "Unspecified"} \
+                               {bcId "null"} {minMax "both"} }
 ```
 For a given solver, sets the boundary condition that will be applied to the min, max, or to both side wall domains in the thickened grid.
 <dl>
@@ -130,22 +143,23 @@ For a given solver, sets the boundary condition that will be applied to the min,
   <dd>Name of the solver for which this entry is being made. Must be one of the solver names returned by
     <b>[pw::Application getCAESolverNames]</b></dd>
   <dt><code>bcName</code></dt>
-  <dd>The side wall BC name. This can be any name allowed by the targeted solver.  If the boundary condition already
-      exisits, it will be used as-is (the `bcType` and `bcId` values are ignored). If the boundary condition does not
-      exit, it is created using the `bcType` and `bcId` values.<br/>
+  <dd>The side wall BC name. This can be any name allowed by the targeted solver.  If the boundary condition
+      already exisits, it will be used as-is (the <code>bcType</code> and <code>bcId</code> values are ignored).
+      If the boundary condition does not exit, it is created using the <code>bcType</code> and <code>bcId</code>
+      values.<br/>
       <br/>
-      If set to `Unspecified`, the boundary condition(s) specified by `minMax` will be cleared. The `bcType` and `bcId`
-      values are ignored.</dd>
+      If set to <b>Unspecified</b>, the boundary condition(s) specified by <code>minMax</code> will be
+      cleared. The <code>bcType</code> and <code>bcId</code> values are ignored.</dd>
   <dt><code>bcType</code></dt>
-  <dd>If a boundary condition is created, it will use this solver specific boundary condition type. If the boundary
-  condition already exists, this value is ignored.</dd>
+  <dd>If a boundary condition is created, it will use this solver specific boundary condition type. If the
+      boundary condition already exists, this value is ignored.</dd>
   <dt><code>bcId</code></dt>
-  <dd>If a boundary condition is created, it will have this user-defined boundary condition id. If the id is set to
-  <b>null</b>, a unique value is automatically assigned. If the boundary condition already exists, this value is
-  ignored.</dd>
+  <dd>If a boundary condition is created, it will have this user-defined boundary condition id. If the id is set
+      to <b>null</b>, a unique value is automatically assigned. If the boundary condition already exists, this
+      value is ignored.</dd>
   <dt><code>minMax</code></dt>
   <dd>Indicates the side wall for which this boundary condition is intended. One of <b>min</b>, <b>max</b>, or
-  <b>both</b>.</dd>
+      <b>both</b>.</dd>
 </dl>
 
 The Min and Max versions of this proc are wrappers around **pw::Thicken2D::setSidewallBc** as detailed below.
