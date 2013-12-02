@@ -603,7 +603,7 @@ namespace eval pw::_Thicken2D::gui {
 
   #----------------------------------------------------------------------------
   proc validateString { val key } {
-    validateInput $val alnum $key
+    validateInput $val print $key
   }
 
 
