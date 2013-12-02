@@ -31,11 +31,6 @@ namespace eval pw::Thicken2D {}
 
 #----------------------------------------------------------------------------
 proc pw::Thicken2D::run { } {
-  setSidewallBc "GASP" "Side Wall" "1st Order Extrapolation"
-
-  setMinSidewallBc "CGNS" "Side Wall Min" "Wall" "null"
-  setMaxSidewallBc "CGNS" "Side Wall Max" "Wall" "null"
-
   pw::_Thicken2D::gui::makeWindow
   tkwait window .
 }

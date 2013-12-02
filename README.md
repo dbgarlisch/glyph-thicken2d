@@ -8,7 +8,7 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 
 ### Table of Contents
 * [Running The Script](#running-the-script)
-* [Configuring The Script](#configuring-the-script)
+    * [Dialog Box Options](#dialog-box-options)
 * [Script Limitations](#script-limitations)
 * [Sourcing This Script](#sourcing-this-script)
     * [pw::Thicken2D Library Docs](#pwthicken2d-library-docs)
@@ -19,18 +19,32 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 
 ## Running The Script
 
-* Build a 2D grid. The CAE dimension **must** be set to 2.
+* Build a 2D grid in an XY plane. The CAE dimension **must** be set to 2.
 * Apply boundary conditions to the appropriate connectors.
 * Execute this script.
+* Set the desired options in the dialog box.
+* Press OK to thicken the grid.
 
+### Dialog Box Options
 
-## Configuring The Script
+![Thicken2d Dialog Box Image](../master/images/dialog.png  "thicken2d dialog box image")
 
-You can change the script's default behavior by editing the configuration options
-set in **pw::Thicken2D::run**. See the the [pw::Thicken2D Library Docs](#pwthicken2d-library-docs) section for details.
+* **Extrude Steps** - Sets the number of extrusion steps.
+* **Extrude Distance** - Sets the total extrusion distance traversed by all steps combined.
+* **Min Side BC** - Sets the boundary condition that will be applied to the min side wall domains in the thickened grid.
+  * You can select the name of an existing boundary condition using the drop down list (the *Type* and *Id* are displayed).
+  * To create a new boundary condition, enter a unique *Name* along with its *Type* and *Id*.
+  * Set the *Name* to *Unspecified* to skip the appication of a min side boundary condition.
+* **Max Side BC** - Sets the boundary condition that will be applied to the max side wall domains in the thickened grid.
+  * You can select the name of an existing boundary condition using the drop down list (the *Type* and *Id* are displayed).
+  * To create a new boundary condition, enter a unique *Name* along with its *Type* and *Id*.
+  * Set the *Name* to *Unspecified* to skip the appication of a max side boundary condition.
+* **Enable verbose output** - Select this option to see detailed runtime information. Unselect this option to see minimal runtime information.
 
 
 ## Script Limitations
+
+This script always extrudes in the +Z direction.
 
 Pointwise does not support 2D mode for some of the CAE solvers that require thickened 2D grids. This script cannot be used for these solvers. Instead, the 2D grids will need to be thickened manually using Pointwise's block extrusion tools.
 
@@ -108,7 +122,7 @@ See **pw::Thicken2D::setSidewallBc** for more details.
 <br/>
 
 ```Tcl
-pw::Thicken2D::setSidewallBc { solverName bcName bcType {bcId "null"} {minMax "both"} }
+pw::Thicken2D::setSidewallBc { solverName {bcName "Unspecified"} {bcType "Unspecified"} {bcId "null"} {minMax "both"} }
 ```
 For a given solver, sets the boundary condition that will be applied to the min, max, or to both side wall domains in the thickened grid.
 <dl>
@@ -118,23 +132,21 @@ For a given solver, sets the boundary condition that will be applied to the min,
   <dt><code>bcName</code></dt>
   <dd>The side wall BC name. This can be any name allowed by the targeted solver.  If the boundary condition already
       exisits, it will be used as-is (the `bcType` and `bcId` values are ignored). If the boundary condition does not
-      exit, it is created using the `bcType` and `bcId` values.</dd>
+      exit, it is created using the `bcType` and `bcId` values.<br/>
+      <br/>
+      If set to `Unspecified`, the boundary condition(s) specified by `minMax` will be cleared. The `bcType` and `bcId`
+      values are ignored.</dd>
   <dt><code>bcType</code></dt>
-  <dd>The solver specific boundary condition type.</dd>
+  <dd>If a boundary condition is created, it will use this solver specific boundary condition type. If the boundary
+  condition already exists, this value is ignored.</dd>
   <dt><code>bcId</code></dt>
-  <dd>An integer, user-defined boundary condition id. If the id is set to <b>null</b>, a unique value is automatically
-      assigned.</dd>
+  <dd>If a boundary condition is created, it will have this user-defined boundary condition id. If the id is set to
+  <b>null</b>, a unique value is automatically assigned. If the boundary condition already exists, this value is
+  ignored.</dd>
   <dt><code>minMax</code></dt>
-  <dd>Indicates the side wall for which this BC is intended. One of <b>min</b>, <b>max</b>, or <b>both</b>.</dd>
+  <dd>Indicates the side wall for which this boundary condition is intended. One of <b>min</b>, <b>max</b>, or
+  <b>both</b>.</dd>
 </dl>
-
-By default, the following side wall boundary condition entries are created;
-```Tcl
-    pw::Thicken2D::setSidewallBc "GASP" "Side Wall" "1st Order Extrapolation"
-
-    pw::Thicken2D::setMinSidewallBc "CGNS" "Side Wall Min" "Wall"
-    pw::Thicken2D::setMaxSidewallBc "CGNS" "Side Wall Max" "Wall"
-```
 
 The Min and Max versions of this proc are wrappers around **pw::Thicken2D::setSidewallBc** as detailed below.
 ```Tcl
