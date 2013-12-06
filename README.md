@@ -45,7 +45,7 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 
 ## Script Limitations
 
-This script always extrudes in the +Z direction.
+The dialog does not support setting the extrusion direction and always extrudes in the +Z direction.
 
 Pointwise does not support 2D mode for some of the CAE solvers that require thickened 2D grids. This script cannot be used for these solvers. Instead, the 2D grids will need to be thickened manually using Pointwise's block extrusion tools.
 
@@ -222,17 +222,20 @@ See also, **pw::Thicken2D::setExtDirection**, **proc pw::Thicken2D::setExtDistan
 
 #### Thickening a 2D Grid for the COBALT Solver
 
-```Glyph
+```Tcl
+    set disableAutoRun_Thicken2D 1 ;# disable the autorun
+    source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"
+
     pw::Application setCAESolver "COBALT" 2
 
     # Set to 0/1 to disable/enable TRACE messages
     pw::Thicken2D::setVerbose 1
 
     # Controls extrusion direction
-    pw::Thicken2D::setExtDirection {0 0 1}
+    pw::Thicken2D::setExtDirection {0 0 1} ;# +Z extrusion
 
     # Controls extrusion distance
-    pw::Thicken2D::setExtDistance 2
+    pw::Thicken2D::setExtDistance 2.5
 
     # Controls extrusion number of steps
     pw::Thicken2D::setExtSteps 4
@@ -242,6 +245,7 @@ See also, **pw::Thicken2D::setExtDirection**, **proc pw::Thicken2D::setExtDistan
 
     pw::Thicken2D::thicken [pw::Grid getAll -type pw::Domain]
 ```
+
 
 ## Disclaimer
 Scripts are freely provided. They are not supported products of
