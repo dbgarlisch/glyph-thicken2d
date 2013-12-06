@@ -71,7 +71,32 @@ To call a proc in this collection, you must prefix the proc name with a **pw::Th
 
 For example:
 ```Tcl
+set disableAutoRun_Thicken2D 1 ;# disable the autorun
+source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"
+pw::Thicken2D::setVerbose 1
 pw::Thicken2D::thicken $doms
+```
+
+To avoid the long namespace prefix, you can also import the public **pw::Thicken2D** procs into your script.
+
+For example:
+```Tcl
+set disableAutoRun_Thicken2D 1 ;# disable the autorun
+source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"
+# import all public procs
+namespace import ::pw::Thicken2D::*
+setVerbose 1
+thicken $doms
+```
+
+```Tcl
+set disableAutoRun_Thicken2D 1 ;# disable the autorun
+source "/some/path/to/your/copy/of/Thicken2Dto3D.glf"
+# import specific public procs
+namespace import ::pw::Thicken2D::setVerbose
+namespace import ::pw::Thicken2D::thicken
+setVerbose 1
+thicken $doms
 ```
 
 
