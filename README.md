@@ -47,7 +47,14 @@ This glyph script thickens a 2D grid into a one cell deep, 3D grid. All boundary
 
 The dialog does not support setting the extrusion direction and always extrudes in the +Z direction.
 
-Pointwise does not support 2D mode for some of the CAE solvers that require thickened 2D grids. This script cannot be used for these solvers. Instead, the 2D grids will need to be thickened manually using Pointwise's block extrusion tools.
+This script cannot be used directly with solvers that do not support 2D grid mode. Instead, the 2D grids will need to be thickened manually using Pointwise's block extrusion tools. However, as a workaround, you can:
+
+* Load your 2D grid into Pointwise.
+* Change the CAE solver to one that supports 2D mode (e.g. CGNS).
+* Switch the mode to 2D (menu CAE/Set Dimension/2D).
+* Thicken the 2D grid with the script.
+* Switch solver to the one you really want to use.
+* Reset the BC and VC types.
 
 
 ## Sourcing This Script
