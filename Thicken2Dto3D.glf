@@ -31,9 +31,9 @@ namespace eval pw::Thicken2D {
   namespace export setExtDirection
   namespace export setExtDistance
   namespace export setExtSteps
-  namespace export setMinSidewallBc
-  namespace export setMaxSidewallBc
-  namespace export setSidewallBc
+  namespace export setMinSidewallBC
+  namespace export setMaxSidewallBC
+  namespace export setSidewallBC
   namespace export thicken
 }
 
@@ -80,21 +80,21 @@ proc pw::Thicken2D::setExtSteps { val } {
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::setMinSidewallBc { solverName bcName bcType {bcId "null"} } {
-  setSidewallBc $solverName $bcName $bcType $bcId "min"
+proc pw::Thicken2D::setMinSidewallBC { solverName bcName bcType {bcId "null"} } {
+  setSidewallBC $solverName $bcName $bcType $bcId "min"
 }
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::setMaxSidewallBc { solverName bcName bcType {bcId "null"} } {
-  setSidewallBc $solverName $bcName $bcType $bcId "max"
+proc pw::Thicken2D::setMaxSidewallBC { solverName bcName bcType {bcId "null"} } {
+  setSidewallBC $solverName $bcName $bcType $bcId "max"
 }
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::setSidewallBc { solverName {bcName "Unspecified"} {bcType "Unspecified"} {bcId "null"} {minMax "both"} } {
+proc pw::Thicken2D::setSidewallBC { solverName {bcName "Unspecified"} {bcType "Unspecified"} {bcId "null"} {minMax "both"} } {
   if { -1 == [lsearch -exact [pw::Application getCAESolverNames] $solverName] } {
-	fatalMsg "Invalid solverName='$solverName' in setSidewallBc!"
+	fatalMsg "Invalid solverName='$solverName' in setSidewallBC!"
   }
   switch $minMax {
   min -
@@ -107,17 +107,17 @@ proc pw::Thicken2D::setSidewallBc { solverName {bcName "Unspecified"} {bcType "U
     set pattern "$key*"
   }
   default {
-	fatalMsg "Invalid minMax='$minMax' in setSidewallBc!"
+	fatalMsg "Invalid minMax='$minMax' in setSidewallBC!"
   }
   }
 
-  variable extSideWallBcInfo
+  variable extSideWallBCInfo
   if { "Unspecified" == $bcName } {
-    array unset extSideWallBcInfo $pattern
-    traceMsg "Removing Side Wall Bc Info for '$key'."
+    array unset extSideWallBCInfo $pattern
+    traceMsg "Removing Side Wall BC Info for '$key'."
   } else {
-    set extSideWallBcInfo($key) [list $bcName $bcType $bcId]
-    traceMsg "Adding extSideWallBcInfo($key) = \{'$bcName' '$bcType' '$bcId'\}."
+    set extSideWallBCInfo($key) [list $bcName $bcType $bcId]
+    traceMsg "Adding extSideWallBCInfo($key) = \{'$bcName' '$bcType' '$bcId'\}."
   }
 }
 
@@ -133,7 +133,7 @@ proc pw::Thicken2D::thicken { domsToThicken } {
   puts "**** Preprocessing 2D grid..."
 
   array set con2DomsMap {} ;# maps a con from 2D grid to its doms
-  array set reg2BcMap {}   ;# maps a 2D register to its BC
+  array set reg2BCMap {}   ;# maps a 2D register to its BC
 
   # Process the 2D grid's connectors
   foreach con [pw::Grid getAll -type pw::Connector] {
@@ -145,9 +145,9 @@ proc pw::Thicken2D::thicken { domsToThicken } {
 	continue
       }
       traceMsg "\{[$dom getName] [$con getName]\} has bc [bcToString $bc]"
-      set reg2BcMap($dom,$con) $bc
+      set reg2BCMap($dom,$con) $bc
     }
-    if { 0 != [llength [array get reg2BcMap "*,$con"]] } {
+    if { 0 != [llength [array get reg2BCMap "*,$con"]] } {
       # con had at least one BC. Save the $con to $doms mapping.
       set con2DomsMap($con) $doms
     }
@@ -194,7 +194,7 @@ proc pw::Thicken2D::thicken { domsToThicken } {
 	    fatalMsg "Could not find extruded block for [$bcDom getName]!"
       }
       # Get the BC associated with the 2D register
-      if { [getRegBc reg2BcMap $bcDom $bcCon bc] } {
+      if { [getRegBC reg2BCMap $bcDom $bcCon bc] } {
 	    # The BC on the 2D register {$bcDom $bcCon} must be transferred to the 3D
 	    # register {$extrudedBlk $extrudedDom}.
 	    $bc apply [list [list $extrudedBlk $extrudedDom]]
@@ -226,8 +226,8 @@ namespace eval pw::Thicken2D {
   #   * Use SolverName,min entry to specify base BC.
   #   * Use SolverName,max entry to specify top BC.
   # BCs are applied to the side wall domains ONLY if the solver is found
-  variable extSideWallBcInfo
-  array set extSideWallBcInfo {} ;#{"BCName" "BCType" Id}
+  variable extSideWallBCInfo
+  array set extSideWallBCInfo {} ;#{"BCName" "BCType" Id}
 
   # BC applied to min (base) doms in extruded blocks.
   variable bcExtrusionBase "null"
@@ -246,23 +246,23 @@ proc pw::Thicken2D::init {} {
 
   puts "**** Initializing namespace pw::Thicken2D ..."
 
-  variable extSideWallBcInfo
+  variable extSideWallBCInfo
   variable bcExtrusionBase
   variable bcExtrusionTop
-  if { "" != [array names extSideWallBcInfo -exact $solverName] } {
+  if { "" != [array names extSideWallBCInfo -exact $solverName] } {
     traceMsg "Same BC used for both side walls."
-    lassign $extSideWallBcInfo($solverName) bcName bcType bcId
+    lassign $extSideWallBCInfo($solverName) bcName bcType bcId
     set bcExtrusionBase [getMinMaxBC $bcName $bcType $bcId]
     set bcExtrusionTop $bcExtrusionBase
   } else {
-    if { "" != [array names extSideWallBcInfo -exact "$solverName,min"] } {
+    if { "" != [array names extSideWallBCInfo -exact "$solverName,min"] } {
       traceMsg "Using min side wall BC."
-      lassign $extSideWallBcInfo($solverName,min) bcName bcType bcId
+      lassign $extSideWallBCInfo($solverName,min) bcName bcType bcId
       set bcExtrusionBase [getMinMaxBC $bcName $bcType $bcId]
     }
-    if { "" != [array names extSideWallBcInfo -exact "$solverName,max"] } {
+    if { "" != [array names extSideWallBCInfo -exact "$solverName,max"] } {
       traceMsg "Using max side wall BC."
-      lassign $extSideWallBcInfo($solverName,max) bcName bcType bcId
+      lassign $extSideWallBCInfo($solverName,max) bcName bcType bcId
       set bcExtrusionTop [getMinMaxBC $bcName $bcType $bcId]
     }
   }
@@ -457,11 +457,11 @@ proc pw::Thicken2D::getExtrudedBlk { fromDom blkVarName } {
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::getRegBc { mapName dom con bcVarName } {
-  upvar $mapName reg2BcMap
+proc pw::Thicken2D::getRegBC { mapName dom con bcVarName } {
+  upvar $mapName reg2BCMap
   upvar $bcVarName bc
   set ret 0
-  set pairs [array get reg2BcMap "$dom,$con"]
+  set pairs [array get reg2BCMap "$dom,$con"]
   if { 2 == [llength $pairs] } {
     set bc [lindex $pairs 1]
     set ret 1
@@ -502,23 +502,23 @@ namespace eval pw::Thicken2D::gui {
   variable extDistance
   set extDistance 1.0
 
-  variable minBcName
-  set minBcName [lindex $bcNames 0]
+  variable minBCName
+  set minBCName [lindex $bcNames 0]
 
-  variable minBcType
-  set minBcType [lindex $bcTypes 0]
+  variable minBCType
+  set minBCType [lindex $bcTypes 0]
 
-  variable minBcId
-  set minBcId null
+  variable minBCId
+  set minBCId null
 
-  variable maxBcName
-  set maxBcName [lindex $bcNames 0]
+  variable maxBCName
+  set maxBCName [lindex $bcNames 0]
 
-  variable maxBcType
-  set maxBcType [lindex $bcTypes 0]
+  variable maxBCType
+  set maxBCType [lindex $bcTypes 0]
 
-  variable maxBcId
-  set maxBcId null
+  variable maxBCId
+  set maxBCId null
 
   # widget hierarchy
   variable w
@@ -532,19 +532,19 @@ namespace eval pw::Thicken2D::gui {
     set w(DistanceEntry)     $w(FrameMain).distanceEntry
 
     set w(BoundaryLabel)     $w(FrameMain).boundaryLabel
-    set w(BcNameLabel)       $w(FrameMain).bcNameLabel
-    set w(BcTypeLabel)       $w(FrameMain).bcTypeLabel
-    set w(BcIdLabel)         $w(FrameMain).bcIdLabel
+    set w(BCNameLabel)       $w(FrameMain).bcNameLabel
+    set w(BCTypeLabel)       $w(FrameMain).bcTypeLabel
+    set w(BCIdLabel)         $w(FrameMain).bcIdLabel
 
-    set w(MinBcLabel)        $w(FrameMain).minBcLabel
-    set w(MinBcNameCombo)    $w(FrameMain).minBcNameCombo
-    set w(MinBcTypeCombo)    $w(FrameMain).minBcTypeCombo
-    set w(MinBcIdEntry)      $w(FrameMain).minBcIdEntry
+    set w(MinBCLabel)        $w(FrameMain).minBCLabel
+    set w(MinBCNameCombo)    $w(FrameMain).minBCNameCombo
+    set w(MinBCTypeCombo)    $w(FrameMain).minBCTypeCombo
+    set w(MinBCIdEntry)      $w(FrameMain).minBCIdEntry
 
-    set w(MaxBcLabel)        $w(FrameMain).maxBcLabel
-    set w(MaxBcNameCombo)    $w(FrameMain).maxBcNameCombo
-    set w(MaxBcTypeCombo)    $w(FrameMain).maxBcTypeCombo
-    set w(MaxBcIdEntry)      $w(FrameMain).maxBcIdEntry
+    set w(MaxBCLabel)        $w(FrameMain).maxBCLabel
+    set w(MaxBCNameCombo)    $w(FrameMain).maxBCNameCombo
+    set w(MaxBCTypeCombo)    $w(FrameMain).maxBCTypeCombo
+    set w(MaxBCIdEntry)      $w(FrameMain).maxBCIdEntry
 
     set w(VerboseCheck)      $w(FrameMain).verboseCheck
 
@@ -595,7 +595,7 @@ proc pw::Thicken2D::gui::validateInteger { val key } {
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::gui::validateBcId { val key } {
+proc pw::Thicken2D::gui::validateBCId { val key } {
   if { "null" == $val } {
     # make integer check happy
     set val 0
@@ -622,12 +622,12 @@ proc pw::Thicken2D::gui::okAction { } {
   variable isVerbose
   variable extDistance
   variable extSteps
-  variable minBcName
-  variable minBcType
-  variable minBcId
-  variable maxBcName
-  variable maxBcType
-  variable maxBcId
+  variable minBCName
+  variable minBCType
+  variable minBCId
+  variable maxBCName
+  variable maxBCType
+  variable maxBCId
 
   setVerbose $isVerbose
 
@@ -641,9 +641,9 @@ proc pw::Thicken2D::gui::okAction { } {
   setExtSteps $extSteps
 
   # clear all BC setting for solver
-  setSidewallBc $caeSolver
-  setMinSidewallBc $caeSolver $minBcName $minBcType $minBcId
-  setMaxSidewallBc $caeSolver $maxBcName $maxBcType $maxBcId
+  setSidewallBC $caeSolver
+  setMinSidewallBC $caeSolver $minBCName $minBCType $minBCId
+  setMaxSidewallBC $caeSolver $maxBCName $maxBCType $maxBCId
 
   # Capture a list of all the grid's domains
   set allDoms [pw::Grid getAll -type pw::Domain]
@@ -686,15 +686,15 @@ proc pw::Thicken2D::gui::distanceAction { action newVal oldVal } {
 #----------------------------------------------------------------------------
 proc pw::Thicken2D::gui::bcNameAction { which action newVal oldVal } {
   set lwhich [string tolower $which]
-  set bcTypeCombo ${which}BcTypeCombo
-  set bcIdEntry ${which}BcIdEntry
-  set bcTypeVar ${lwhich}BcType
-  set bcIdVar ${lwhich}BcId
+  set bcTypeCombo ${which}BCTypeCombo
+  set bcIdEntry ${which}BCIdEntry
+  set bcTypeVar ${lwhich}BCType
+  set bcIdVar ${lwhich}BCId
 
   variable w
-  variable ${lwhich}BcName
-  variable ${lwhich}BcType
-  variable ${lwhich}BcId
+  variable ${lwhich}BCName
+  variable ${lwhich}BCType
+  variable ${lwhich}BCId
   variable bcNamesSorted
 
   if { -1 == [lsearch -sorted $bcNamesSorted $newVal] } {
@@ -721,23 +721,23 @@ proc pw::Thicken2D::gui::bcNameAction { which action newVal oldVal } {
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::gui::minBcNameAction { action newVal oldVal } {
+proc pw::Thicken2D::gui::minBCNameAction { action newVal oldVal } {
   bcNameAction Min $action $newVal $oldVal
   return 1
 }
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::gui::maxBcNameAction { action newVal oldVal } {
+proc pw::Thicken2D::gui::maxBCNameAction { action newVal oldVal } {
   bcNameAction Max $action $newVal $oldVal
   return 1
 }
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::gui::minBcIdAction { action newVal oldVal } {
+proc pw::Thicken2D::gui::minBCIdAction { action newVal oldVal } {
   if { -1 != $action } {
-    validateBcId $newVal MIN_ID
+    validateBCId $newVal MIN_ID
     checkErrors
   }
   return 1
@@ -745,9 +745,9 @@ proc pw::Thicken2D::gui::minBcIdAction { action newVal oldVal } {
 
 
 #----------------------------------------------------------------------------
-proc pw::Thicken2D::gui::maxBcIdAction { action newVal oldVal } {
+proc pw::Thicken2D::gui::maxBCIdAction { action newVal oldVal } {
   if { -1 != $action } {
-    validateBcId $newVal MAX_ID
+    validateBCId $newVal MAX_ID
     checkErrors
   }
   return 1
@@ -760,8 +760,8 @@ proc pw::Thicken2D::gui::makeWindow { } {
   variable caeSolver
   variable bcNames
   variable bcTypes
-  variable minBcName
-  variable maxBcName
+  variable minBCName
+  variable maxBCName
 
   set disabledBgColor [ttk::style lookup TEntry -fieldbackground disabled]
   ttk::style map TCombobox -fieldbackground [list disabled $disabledBgColor]
@@ -781,33 +781,33 @@ proc pw::Thicken2D::gui::makeWindow { } {
     -validate key -validatecommand { pw::Thicken2D::gui::distanceAction %d %P %s }
 
   label $w(BoundaryLabel) -text "Boundary" -anchor w
-  label $w(BcNameLabel) -text "Name" -anchor w
-  label $w(BcTypeLabel) -text "Type" -anchor w
-  label $w(BcIdLabel) -text "Id" -anchor w
+  label $w(BCNameLabel) -text "Name" -anchor w
+  label $w(BCTypeLabel) -text "Type" -anchor w
+  label $w(BCIdLabel) -text "Id" -anchor w
 
-  label $w(MinBcLabel) -text "Min Side BC" -anchor w
-  ttk::combobox $w(MinBcNameCombo) -values $bcNames -state normal \
-    -textvariable pw::Thicken2D::gui::minBcName -validate key \
-    -validatecommand { pw::Thicken2D::gui::minBcNameAction %d %P %s }
-  bind $w(MinBcNameCombo) <<ComboboxSelected>> \
-    {pw::Thicken2D::gui::minBcNameAction 9 $pw::Thicken2D::gui::minBcName \
-      $pw::Thicken2D::gui::minBcName}
-  ttk::combobox $w(MinBcTypeCombo) -values $bcTypes \
-    -state readonly -textvariable pw::Thicken2D::gui::minBcType
-  entry $w(MinBcIdEntry) -textvariable pw::Thicken2D::gui::minBcId -width 4 \
-    -validate key -validatecommand { pw::Thicken2D::gui::minBcIdAction %d %P %s }
+  label $w(MinBCLabel) -text "Min Side BC" -anchor w
+  ttk::combobox $w(MinBCNameCombo) -values $bcNames -state normal \
+    -textvariable pw::Thicken2D::gui::minBCName -validate key \
+    -validatecommand { pw::Thicken2D::gui::minBCNameAction %d %P %s }
+  bind $w(MinBCNameCombo) <<ComboboxSelected>> \
+    {pw::Thicken2D::gui::minBCNameAction 9 $pw::Thicken2D::gui::minBCName \
+      $pw::Thicken2D::gui::minBCName}
+  ttk::combobox $w(MinBCTypeCombo) -values $bcTypes \
+    -state readonly -textvariable pw::Thicken2D::gui::minBCType
+  entry $w(MinBCIdEntry) -textvariable pw::Thicken2D::gui::minBCId -width 4 \
+    -validate key -validatecommand { pw::Thicken2D::gui::minBCIdAction %d %P %s }
 
-  label $w(MaxBcLabel) -text "Max Side BC" -anchor w
-  ttk::combobox $w(MaxBcNameCombo) -values $bcNames \
-    -state normal -textvariable pw::Thicken2D::gui::maxBcName -validate key \
-    -validatecommand { pw::Thicken2D::gui::maxBcNameAction %d %P %s }
-  bind $w(MaxBcNameCombo) <<ComboboxSelected>> \
-    {pw::Thicken2D::gui::maxBcNameAction 9 $pw::Thicken2D::gui::maxBcName \
-      $pw::Thicken2D::gui::maxBcName}
-  ttk::combobox $w(MaxBcTypeCombo) -values $bcTypes \
-    -state readonly -textvariable pw::Thicken2D::gui::maxBcType
-  entry $w(MaxBcIdEntry) -textvariable pw::Thicken2D::gui::maxBcId -width 4 \
-    -validate key -validatecommand { pw::Thicken2D::gui::maxBcIdAction %d %P %s }
+  label $w(MaxBCLabel) -text "Max Side BC" -anchor w
+  ttk::combobox $w(MaxBCNameCombo) -values $bcNames \
+    -state normal -textvariable pw::Thicken2D::gui::maxBCName -validate key \
+    -validatecommand { pw::Thicken2D::gui::maxBCNameAction %d %P %s }
+  bind $w(MaxBCNameCombo) <<ComboboxSelected>> \
+    {pw::Thicken2D::gui::maxBCNameAction 9 $pw::Thicken2D::gui::maxBCName \
+      $pw::Thicken2D::gui::maxBCName}
+  ttk::combobox $w(MaxBCTypeCombo) -values $bcTypes \
+    -state readonly -textvariable pw::Thicken2D::gui::maxBCType
+  entry $w(MaxBCIdEntry) -textvariable pw::Thicken2D::gui::maxBCId -width 4 \
+    -validate key -validatecommand { pw::Thicken2D::gui::maxBCIdAction %d %P %s }
 
   checkbutton $w(VerboseCheck) -text "Enable verbose output" \
     -variable pw::Thicken2D::gui::isVerbose -anchor w -padx 20 -state active
@@ -833,19 +833,19 @@ proc pw::Thicken2D::gui::makeWindow { } {
   grid $w(DistanceEntry) -row 1 -column 1 -sticky w -pady 3 -padx 3
 
   grid $w(BoundaryLabel) -row 2 -column 0 -sticky w -pady 3 -padx 3
-  grid $w(BcNameLabel)   -row 2 -column 1 -sticky w -pady 3 -padx 3
-  grid $w(BcTypeLabel)   -row 2 -column 2 -sticky w -pady 3 -padx 3
-  grid $w(BcIdLabel)     -row 2 -column 3 -sticky w -pady 3 -padx 3
+  grid $w(BCNameLabel)   -row 2 -column 1 -sticky w -pady 3 -padx 3
+  grid $w(BCTypeLabel)   -row 2 -column 2 -sticky w -pady 3 -padx 3
+  grid $w(BCIdLabel)     -row 2 -column 3 -sticky w -pady 3 -padx 3
 
-  grid $w(MinBcLabel)     -row 3 -column 0 -sticky we -pady 3 -padx 3
-  grid $w(MinBcNameCombo) -row 3 -column 1 -sticky we -pady 3 -padx 3
-  grid $w(MinBcTypeCombo) -row 3 -column 2 -sticky we -pady 3 -padx 3
-  grid $w(MinBcIdEntry)   -row 3 -column 3 -sticky we -pady 3 -padx 3
+  grid $w(MinBCLabel)     -row 3 -column 0 -sticky we -pady 3 -padx 3
+  grid $w(MinBCNameCombo) -row 3 -column 1 -sticky we -pady 3 -padx 3
+  grid $w(MinBCTypeCombo) -row 3 -column 2 -sticky we -pady 3 -padx 3
+  grid $w(MinBCIdEntry)   -row 3 -column 3 -sticky we -pady 3 -padx 3
 
-  grid $w(MaxBcLabel)     -row 4 -column 0 -sticky we -pady 3 -padx 3
-  grid $w(MaxBcNameCombo) -row 4 -column 1 -sticky we -pady 3 -padx 3
-  grid $w(MaxBcTypeCombo) -row 4 -column 2 -sticky we -pady 3 -padx 3
-  grid $w(MaxBcIdEntry)   -row 4 -column 3 -sticky we -pady 3 -padx 3
+  grid $w(MaxBCLabel)     -row 4 -column 0 -sticky we -pady 3 -padx 3
+  grid $w(MaxBCNameCombo) -row 4 -column 1 -sticky we -pady 3 -padx 3
+  grid $w(MaxBCTypeCombo) -row 4 -column 2 -sticky we -pady 3 -padx 3
+  grid $w(MaxBCIdEntry)   -row 4 -column 3 -sticky we -pady 3 -padx 3
 
   grid $w(VerboseCheck)  -row 5 -columnspan 2 -sticky we -pady 3 -padx 3
 
@@ -859,8 +859,8 @@ proc pw::Thicken2D::gui::makeWindow { } {
   pack $w(FrameButtons) -fill x -side bottom -padx 0 -pady 0 -anchor s
 
   # init GUI state for BC data
-  minBcNameAction 8 $minBcName $minBcName
-  maxBcNameAction 8 $maxBcName $maxBcName
+  minBCNameAction 8 $minBCName $minBCName
+  maxBCNameAction 8 $maxBCName $maxBCName
 
   focus $w(VerboseCheck)
   raise .
