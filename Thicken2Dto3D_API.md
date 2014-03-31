@@ -1,15 +1,5 @@
 # glyph-thicken2d API
 
-### Table of Contents
-* [Namespace pw::Thicken2D](#namespace-pwthicken2d)
-* [pw::Thicken2D Library Docs](#pwthicken2d-library-docs)
-* [pw::Thicken2D Library Usage Examples](#pwthicken2d-library-usage-examples)
-    * [Thickening a 2D Grid for the COBALT Solver](#thickening-a-2d-grid-for-the-cobalt-solver)
-* [Disclaimer](#disclaimer)
-
-
-## pw::Thicken2D API
-
 It is possible to source this script in your own Glyph scripts and use it as a library.
 
 To source this script add the following lines to your script:
@@ -21,7 +11,15 @@ To source this script add the following lines to your script:
 
 See the script `test/test01.glf` for an example.
 
-### Namespace pw::Thicken2D
+### Table of Contents
+* [Namespace pw::Thicken2D](#namespace-pwthicken2d)
+* [pw::Thicken2D Library Docs](#pwthicken2d-library-docs)
+* [pw::Thicken2D Library Usage Examples](#pwthicken2d-library-usage-examples)
+    * [Thickening a 2D Grid for the COBALT Solver](#thickening-a-2d-grid-for-the-cobalt-solver)
+* [Disclaimer](#disclaimer)
+
+
+## Namespace pw::Thicken2D
 
 All of the procs in this collection reside in the **pw::Thicken2D** namespace.
 
@@ -58,7 +56,7 @@ thicken $doms
 ```
 
 
-### pw::Thicken2D Library Docs
+## pw::Thicken2D Library Docs
 
 ```Tcl
 pw::Thicken2D::setVerbose { val }
@@ -176,9 +174,9 @@ All boundary conditions in the 2D grid are automatically transfered to the corre
 See also, **pw::Thicken2D::setExtDirection**, **proc pw::Thicken2D::setExtDistance**, **proc pw::Thicken2D::setExtSteps**, **pw::Thicken2D::setMinSidewallBc**, **pw::Thicken2D::setMaxSidewallBc**, **pw::Thicken2D::setSidewallBc**.
 <br/>
 
-### pw::Thicken2D Library Usage Examples
+## pw::Thicken2D Library Usage Examples
 
-#### Thickening a 2D Grid for the COBALT Solver
+### Thickening a 2D Grid for the COBALT Solver
 
 ```Tcl
     set disableAutoRun_Thicken2D 1 ;# disable the autorun
