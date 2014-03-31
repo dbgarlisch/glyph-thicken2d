@@ -57,7 +57,7 @@ This script cannot be used directly with solvers that do not support 2D grid mod
 
 It is possible to source this script in your own Glyph scripts and use it as a library.
 
-See the [Thicken2D API Docs](Thicken2Dto3D_API.md) for information on how to use this script as a library.
+See the [Thicken2D API Docs](docs/Thicken2Dto3D_API.md) for information on how to use this script as a library.
 
 
 ## Disclaimer
