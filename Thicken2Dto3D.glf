@@ -21,7 +21,7 @@
 if { ![namespace exists pw::Thicken2D] } {
 
 package require PWI_Glyph
-pw::Script loadTk
+
 
 #####################################################################
 #                       public namespace procs
@@ -934,7 +934,8 @@ ZShAUfVa3Bz/EpQ70oWJC2mAKDmwEHYAIxhikAQPeOCLdRTEAhGIQKL0IMoGTGMgIBClA9QxkA3U
 #                           MAIN
 #####################################################################
 if { ![info exists disableAutoRun_Thicken2D] } {
-    pw::Thicken2D::gui::run
+  pw::Script loadTk
+  pw::Thicken2D::gui::run
 }
 
 # END SCRIPT
