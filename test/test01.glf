@@ -40,8 +40,8 @@ pw::Thicken2D::setExtDistance 2
 # Controls extrusion number of steps
 pw::Thicken2D::setExtSteps 4
 
-pw::Thicken2D::setMinSidewallBc "COBALT" "Side Wall Min" "Solid Wall" "99"
-pw::Thicken2D::setMaxSidewallBc "COBALT" "Side Wall Max" "Solid Wall" "88"
+pw::Thicken2D::setMinSidewallBC "COBALT" "Side Wall Min" "Solid Wall" "99"
+pw::Thicken2D::setMaxSidewallBC "COBALT" "Side Wall Max" "Solid Wall" "88"
 
 pw::Thicken2D::thicken [pw::Grid getAll -type pw::Domain]
 
